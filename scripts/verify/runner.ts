@@ -21,6 +21,11 @@ export interface VerifyCheck {
   /** docs/api-notes.md와 매칭되는 이름 (예: "GET /open/v1/users/me") */
   name: string;
   requires: CheckRequirement;
+  /**
+   * 지정 시 해당 환경변수가 설정된 경우에만 실행 (미설정 시 SKIP).
+   * 채팅 전송·공지 등록처럼 채널에 실제 흔적을 남기는 쓰기 검증에 사용.
+   */
+  skipUnlessEnv?: string;
   run(ctx: VerifyContext): Promise<CheckOutcome>;
 }
 
@@ -93,7 +98,9 @@ export async function runChecks(checks: readonly VerifyCheck[]): Promise<void> {
         ? 'Client 자격증명 없음'
         : needsUser && ctx.tokenManager === undefined
           ? '유저 토큰 없음'
-          : null;
+          : check.skipUnlessEnv !== undefined && process.env[check.skipUnlessEnv] === undefined
+            ? `쓰기 검증 비활성 (${check.skipUnlessEnv}=1 설정 시 실행)`
+            : null;
 
     if (skipReason !== null) {
       console.log(`⏭️  SKIP  ${check.name} — ${skipReason} (검증 보류 🟡)`);
