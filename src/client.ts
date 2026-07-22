@@ -12,6 +12,7 @@ import { ChatResource } from './resources/chat.js';
 import { DropsResource } from './resources/drops.js';
 import { LiveResource } from './resources/live.js';
 import { RestrictionResource } from './resources/restriction.js';
+import { SessionResource } from './resources/session.js';
 import { UserResource } from './resources/user.js';
 import type { ResourceDeps } from './resources/shared.js';
 
@@ -51,6 +52,7 @@ export class ChzzkOpenClient {
   readonly chats: ChatResource;
   readonly drops: DropsResource;
   readonly restrictions: RestrictionResource;
+  readonly sessions: SessionResource;
 
   private readonly clientId: string;
 
@@ -87,6 +89,7 @@ export class ChzzkOpenClient {
     this.chats = new ChatResource(deps);
     this.drops = new DropsResource(deps);
     this.restrictions = new RestrictionResource(deps);
+    this.sessions = new SessionResource(deps);
   }
 
   /** 인가 코드 요청 URL 생성 — 유저를 이 URL로 리다이렉트한다. */

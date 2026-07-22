@@ -24,6 +24,7 @@ import { ChzzkPermissionError } from '../../src/errors.js';
 import { chatSendResultSchema, chatSettingsSchema } from '../../src/types/chat.js';
 import { dropsRewardClaimsPageSchema } from '../../src/types/drops.js';
 import { restrictedChannelsPageSchema } from '../../src/types/restriction.js';
+import { sessionAuthSchema, sessionsPageSchema } from '../../src/types/session.js';
 import { livesPageSchema, liveSettingSchema, streamKeySchema } from '../../src/types/live.js';
 import { userMeSchema } from '../../src/types/user.js';
 import { checkSchema, runChecks, type VerifyCheck, type VerifyContext } from './runner.js';
@@ -494,6 +495,93 @@ const restrictionListCheck: VerifyCheck = {
 // restrict-channels POST/DELETE·temporary: 실제 사용자를 제한하므로 자동 검증에서 제외.
 // 라운드트립 프로브는 scripts 외부에서 수동 수행 (api-notes #33 — 관리자 계정은 등록 불가)
 
+// --- Session (REST) -------------------------------------------------------
+
+/** https://chzzk.gitbook.io/chzzk/chzzk-api/session */
+const sessionAuthUserCheck: VerifyCheck = {
+  name: 'GET /open/v1/sessions/auth',
+  requires: 'user',
+  async run(ctx) {
+    const manager = requireParam(ctx.tokenManager, 'tokenManager');
+    const raw = await manager.withAccessToken((token) =>
+      ctx.http.request<unknown>({
+        method: 'GET',
+        path: '/open/v1/sessions/auth',
+        headers: bearerHeaders(token),
+      }),
+    );
+    const { parsed, extraFields } = checkSchema(sessionAuthSchema, raw, ['url']);
+    return { extraFields, note: `url host=${new URL(parsed.url).host}` };
+  },
+};
+
+const sessionAuthClientCheck: VerifyCheck = {
+  name: 'GET /open/v1/sessions/auth/client',
+  requires: 'client',
+  async run(ctx) {
+    const raw = await ctx.http.request<unknown>({
+      method: 'GET',
+      path: '/open/v1/sessions/auth/client',
+      headers: clientHeaders(
+        requireParam(ctx.clientId, 'clientId'),
+        requireParam(ctx.clientSecret, 'clientSecret'),
+      ),
+    });
+    const { parsed, extraFields } = checkSchema(sessionAuthSchema, raw, ['url']);
+    return { extraFields, note: `url host=${new URL(parsed.url).host}` };
+  },
+};
+
+const sessionsListUserCheck: VerifyCheck = {
+  name: 'GET /open/v1/sessions',
+  requires: 'user',
+  async run(ctx) {
+    const manager = requireParam(ctx.tokenManager, 'tokenManager');
+    const raw = await manager.withAccessToken((token) =>
+      ctx.http.request<unknown>({
+        method: 'GET',
+        path: '/open/v1/sessions',
+        query: { size: 5, page: 0 },
+        headers: bearerHeaders(token),
+      }),
+    );
+    // page/totalCount/totalPages 메타는 실측 확정 (api-notes #20)
+    const { parsed, extraFields } = checkSchema(sessionsPageSchema, raw, [
+      'data',
+      'page',
+      'totalCount',
+      'totalPages',
+    ]);
+    return { extraFields, note: `totalCount=${String(parsed.totalCount)}` };
+  },
+};
+
+const sessionsListClientCheck: VerifyCheck = {
+  name: 'GET /open/v1/sessions/client',
+  requires: 'client',
+  async run(ctx) {
+    const raw = await ctx.http.request<unknown>({
+      method: 'GET',
+      path: '/open/v1/sessions/client',
+      query: { size: 5, page: 0 },
+      headers: clientHeaders(
+        requireParam(ctx.clientId, 'clientId'),
+        requireParam(ctx.clientSecret, 'clientSecret'),
+      ),
+    });
+    const { parsed, extraFields } = checkSchema(sessionsPageSchema, raw, [
+      'data',
+      'page',
+      'totalCount',
+      'totalPages',
+    ]);
+    return { extraFields, note: `totalCount=${String(parsed.totalCount)}` };
+  },
+};
+
+// subscribe/unsubscribe: 활성 소켓의 sessionKey 필요 — 폴링 프로브로 실측 완료
+// (subscribed/unsubscribed SYSTEM 통지, 클라이언트 세션+유저 토큰 조합 포함. api-notes #35)
+
 await runChecks([
   usersMeCheck,
   categoriesSearchCheck,
@@ -511,4 +599,8 @@ await runChecks([
   chatNoticeCheck,
   dropsRewardClaimsCheck,
   restrictionListCheck,
+  sessionAuthUserCheck,
+  sessionAuthClientCheck,
+  sessionsListUserCheck,
+  sessionsListClientCheck,
 ]);
