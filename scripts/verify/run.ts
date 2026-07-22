@@ -23,6 +23,7 @@ import {
 import { ChzzkPermissionError } from '../../src/errors.js';
 import { chatSendResultSchema, chatSettingsSchema } from '../../src/types/chat.js';
 import { dropsRewardClaimsPageSchema } from '../../src/types/drops.js';
+import { restrictedChannelsPageSchema } from '../../src/types/restriction.js';
 import { livesPageSchema, liveSettingSchema, streamKeySchema } from '../../src/types/live.js';
 import { userMeSchema } from '../../src/types/user.js';
 import { checkSchema, runChecks, type VerifyCheck, type VerifyContext } from './runner.js';
@@ -465,6 +466,34 @@ const dropsRewardClaimsCheck: VerifyCheck = {
   },
 };
 
+// --- Restriction ----------------------------------------------------------
+
+/** https://chzzk.gitbook.io/chzzk/chzzk-api/restriction */
+const restrictionListCheck: VerifyCheck = {
+  name: 'GET /open/v1/restrict-channels',
+  requires: 'user',
+  async run(ctx) {
+    const manager = requireParam(ctx.tokenManager, 'tokenManager');
+    const raw = await manager.withAccessToken((token) =>
+      ctx.http.request<unknown>({
+        method: 'GET',
+        path: '/open/v1/restrict-channels',
+        query: { size: 5 },
+        headers: bearerHeaders(token),
+      }),
+    );
+    // 래핑 구조 {data, page.next}는 실측(2026-07-22) 확정 — api-notes #17
+    const { parsed, extraFields } = checkSchema(restrictedChannelsPageSchema, raw, [
+      'data',
+      'page',
+    ]);
+    return { extraFields, note: `${parsed.data.length}건` };
+  },
+};
+
+// restrict-channels POST/DELETE·temporary: 실제 사용자를 제한하므로 자동 검증에서 제외.
+// 라운드트립 프로브는 scripts 외부에서 수동 수행 (api-notes #33 — 관리자 계정은 등록 불가)
+
 await runChecks([
   usersMeCheck,
   categoriesSearchCheck,
@@ -481,4 +510,5 @@ await runChecks([
   chatSettingsPutCheck,
   chatNoticeCheck,
   dropsRewardClaimsCheck,
+  restrictionListCheck,
 ]);
