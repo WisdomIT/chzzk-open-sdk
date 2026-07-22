@@ -29,3 +29,27 @@ export {
 export { noopLogger, maskSecret, type ChzzkLogger } from './http/logger.js';
 
 export { paginateByPage, paginateByCursor, type CursorPage } from './http/pagination.js';
+
+export {
+  InMemoryTokenStore,
+  isTokenExpired,
+  type ChzzkTokenSet,
+  type TokenStore,
+} from './auth/types.js';
+
+export { bearerHeaders, clientHeaders } from './auth/headers.js';
+
+export {
+  ACCOUNT_INTERLOCK_URL,
+  buildAuthorizationUrl,
+  type AuthorizationUrlParams,
+} from './auth/oauth.js';
+
+export {
+  AuthClient,
+  type AuthClientOptions,
+  type IssueTokenParams,
+  type TokenTypeHint,
+} from './auth/client.js';
+
+export { TokenManager, ChzzkTokenRefreshError, type TokenManagerOptions } from './auth/manager.js';
