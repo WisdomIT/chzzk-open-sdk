@@ -115,6 +115,11 @@ export class SessionTransport extends TypedEmitter<TransportEvents> {
     return this.currentSessionKey;
   }
 
+  /** 수명 상태. 'closed'는 close() 호출 또는 재연결 시도 소진을 뜻한다. */
+  get status(): 'idle' | 'running' | 'closed' {
+    return this.state;
+  }
+
   /**
    * 연결 시작. 최초 연결+구독까지 완료되면 resolve한다.
    * 최초 시도 실패는 그대로 throw (설정 오류를 감추지 않기 위해 재시도하지
