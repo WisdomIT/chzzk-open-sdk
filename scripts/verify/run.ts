@@ -14,6 +14,7 @@
 import { z } from 'zod';
 import { bearerHeaders, clientHeaders } from '../../src/auth/headers.js';
 import { requireParam } from '../../src/http/validate.js';
+import { userMeSchema } from '../../src/types/user.js';
 import { checkSchema, runChecks, type VerifyCheck } from './runner.js';
 
 // --- User ---------------------------------------------------------------
@@ -31,11 +32,12 @@ const usersMeCheck: VerifyCheck = {
         headers: bearerHeaders(token),
       }),
     );
-    const schema = z.looseObject({
-      channelId: z.string(),
-      channelName: z.string(),
-    });
-    const { parsed, extraFields } = checkSchema(schema, raw, ['channelId', 'channelName']);
+    // SDK 타입(문서 + 실측 nickname 포함)을 그대로 대조한다
+    const { parsed, extraFields } = checkSchema(userMeSchema, raw, [
+      'channelId',
+      'channelName',
+      'nickname',
+    ]);
     return { extraFields, note: `channelName=${parsed.channelName}` };
   },
 };

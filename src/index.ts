@@ -53,3 +53,12 @@ export {
 } from './auth/client.js';
 
 export { TokenManager, ChzzkTokenRefreshError, type TokenManagerOptions } from './auth/manager.js';
+
+export { ChzzkOpenClient, type ChzzkOpenClientOptions } from './client.js';
+
+export { UserResource } from './resources/user.js';
+export type { ResourceDeps } from './resources/shared.js';
+
+export { userMeSchema, type UserMe } from './types/user.js';
+
+export { parseLenient } from './http/parse.js';
