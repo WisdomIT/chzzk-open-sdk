@@ -72,7 +72,7 @@ export const rawDonationEventSchema = z.looseObject({
   channelId: z.string(),
   donatorChannelId: z.string(),
   donatorNickname: z.string(),
-  /** 문서·wizbot 모두 문자열 (원 단위) — 실이벤트 실측은 보류 (api-notes #9) */
+  /** 문서 기준 문자열 (원 단위) — 실이벤트 실측은 보류 (api-notes #9) */
   payAmount: z.union([z.string(), z.number()]),
   donationText: z.string().optional(),
   emojis: z.record(z.string(), z.string()).optional(),

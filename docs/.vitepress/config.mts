@@ -9,6 +9,33 @@ function loadApiSidebar(): DefaultTheme.SidebarItem[] {
   return JSON.parse(readFileSync(sidebarPath, 'utf8')) as DefaultTheme.SidebarItem[];
 }
 
+// 가이드 · API 레퍼런스 · 검증이 하나의 사이드바를 공유한다
+const sidebar: DefaultTheme.SidebarItem[] = [
+  {
+    text: '가이드',
+    items: [
+      { text: '시작하기', link: '/guide/getting-started' },
+      { text: 'OAuth 인증', link: '/guide/oauth' },
+      { text: '리소스 API', link: '/guide/resources' },
+      { text: '실시간 이벤트', link: '/guide/realtime' },
+    ],
+  },
+  {
+    text: 'API 레퍼런스',
+    collapsed: true,
+    link: '/api/',
+    items: loadApiSidebar(),
+  },
+  {
+    text: '검증',
+    items: [
+      { text: '문서-실제 검증 기록', link: '/api-notes' },
+      { text: '엔드포인트 정리표', link: '/endpoints' },
+      { text: '검증 하니스 사용법', link: '/verification' },
+    ],
+  },
+];
+
 export default defineConfig({
   lang: 'ko-KR',
   title: 'chzzk-open-sdk',
@@ -23,39 +50,7 @@ export default defineConfig({
       { text: '검증 기록', link: '/api-notes' },
     ],
 
-    sidebar: {
-      '/guide/': [
-        {
-          text: '가이드',
-          items: [
-            { text: '시작하기', link: '/guide/getting-started' },
-            { text: 'OAuth 인증', link: '/guide/oauth' },
-            { text: '리소스 API', link: '/guide/resources' },
-            { text: '실시간 이벤트', link: '/guide/realtime' },
-            { text: 'wizbot 마이그레이션', link: '/guide/migration' },
-          ],
-        },
-        {
-          text: '검증',
-          items: [
-            { text: '문서-실제 검증 기록', link: '/api-notes' },
-            { text: '엔드포인트 정리표', link: '/endpoints' },
-            { text: '검증 하니스 사용법', link: '/verification' },
-          ],
-        },
-      ],
-      '/api/': [{ text: 'API 레퍼런스', items: loadApiSidebar() }],
-      '/': [
-        {
-          text: '검증',
-          items: [
-            { text: '문서-실제 검증 기록', link: '/api-notes' },
-            { text: '엔드포인트 정리표', link: '/endpoints' },
-            { text: '검증 하니스 사용법', link: '/verification' },
-          ],
-        },
-      ],
-    },
+    sidebar,
 
     socialLinks: [{ icon: 'github', link: 'https://github.com/WisdomIT/chzzk-open-sdk' }],
     search: { provider: 'local' },

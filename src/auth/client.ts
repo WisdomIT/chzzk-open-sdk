@@ -110,7 +110,7 @@ export class AuthClient {
    * 토큰 폐기. 동일 clientId+user로 발급된 모든 토큰이 함께 제거된다.
    *
    * 경로는 문서 기준 `/auth/v1/token/revoke`.
-   * 구 wizbot 코드는 `/auth/v1/revoke`를 사용했으나 문서와 불일치 —
+   * 일부 기존 구현은 `/auth/v1/revoke`를 사용했으나 문서와 불일치 —
    * 실자격 검증 전까지 문서 경로를 따른다 (docs/api-notes.md #1).
    */
   async revokeToken(token: string, tokenTypeHint: TokenTypeHint = 'access_token'): Promise<void> {

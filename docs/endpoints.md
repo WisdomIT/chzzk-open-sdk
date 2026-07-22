@@ -70,7 +70,7 @@ Body: `grantType`("refresh_token" 고정), `refreshToken`, `clientId`, `clientSe
 
 Body: `clientId`, `clientSecret`, `token`, `tokenTypeHint`("access_token" 기본 | "refresh_token")
 
-동일 clientId+user로 발급된 **모든 토큰이 함께 제거**됨. wizbot 기존 코드는 `/auth/v1/revoke` 사용 — [경로 검증 대상](api-notes.md).
+동일 clientId+user로 발급된 **모든 토큰이 함께 제거**됨. 일부 기존 구현은 `/auth/v1/revoke` 사용 — [경로 검증 대상](api-notes.md).
 
 ---
 

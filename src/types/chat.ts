@@ -25,7 +25,7 @@ export type ChatAvailableGroup =
  * GET /open/v1/chats/settings 응답.
  * 필드명·구성은 실측(2026-07-22)으로 확정 — 문서와 일치
  * (`allowSubscriberInFollowerMode`, `chatSlowModeSec`, `chatEmojiMode` 포함.
- *  구 wizbot 타입의 `allowSubscriberFollowerMode`는 오타였음. api-notes #11, #12)
+ *  일부 기존 구현의 `allowSubscriberFollowerMode` 표기는 오타. api-notes #11, #12)
  */
 export const chatSettingsSchema = z.looseObject({
   chatAvailableCondition: z.custom<ChatAvailableCondition>((value) => typeof value === 'string'),

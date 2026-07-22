@@ -76,8 +76,7 @@ function sleep(ms: number): Promise<void> {
  * Transport 계층 — 단일 업스트림 연결의 수명 관리.
  *
  * 공식 세션 API로 URL을 발급받아 연결하고, `SYSTEM(connected)`의
- * sessionKey에 "반응해" 구독을 호출한다 (고정 지연 없음 — wizbot의
- * setTimeout(1000) 방식 대체). 연결이 끊기면 새 세션 URL 재발급 →
+ * sessionKey에 "반응해" 구독을 호출한다 (고정 지연 대기 없음). 연결이 끊기면 새 세션 URL 재발급 →
  * 재연결 → 재구독을 자동 복구한다 (sessionKey는 세션마다 새로 발급됨).
  *
  * 원시 이벤트는 파싱 없이 `raw`로 그대로 전달한다 — 정규화는 #16,

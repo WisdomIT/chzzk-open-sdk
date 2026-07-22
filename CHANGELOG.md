@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **문서-실제 검증 하니스**: 로컬 OAuth 로그인 서버(`pnpm login`), 검증 러너(`pnpm verify`), [docs/api-notes.md](docs/api-notes.md)에 35건 실측 기록
 - 실행 가능한 examples 6종 (SSE 릴레이 어댑터, 스트림 가공 명령어 봇 포함)
 
-### Fixed (기존 wizbot 구현 대비 교정)
+### Fixed (기존 커뮤니티 구현 대비 교정)
 
 - 토큰 폐기 경로를 문서 기준 `/auth/v1/token/revoke`로 교정
 - `SUBSCRIPTION` 세션 이벤트 지원 추가 (구 코드 누락)
