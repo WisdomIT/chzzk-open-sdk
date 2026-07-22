@@ -53,7 +53,7 @@
   - `GET {origin}/socket.io/?EIO=3&transport=polling&auth=...` 핸드셰이크 성공 → `sid` 발급, `upgrades: ["websocket"]`
   - 이후 폴링 GET만으로 `40`(네임스페이스 연결) → `42["SYSTEM","{...connected, sessionKey...}"]` 수신
   - 구독(POST + 쿼리) 후 `SYSTEM(subscribed)` → 채팅 발생 시 `42["CHAT","{...}"]` 수신까지 순수 fetch로 재현됨
-  - 따라서 Transport(#15)는 **경량 EIO=3 클라이언트 자체 구현이 실측으로 검증됨** (의존성 최소화). WebSocket 업그레이드는 Node 22+ 내장 WebSocket 사용 가능, Node 18~20은 폴링 폴백 또는 `ws` 선택 — #15에서 확정
+  - **#15 확정: 의존성 0의 자체 EIO=3 클라이언트 구현.** WebSocket(`globalThis.WebSocket`, Node 22+/브라우저) 우선 + 순수 fetch 롱폴링 폴백(Node 18~20). 두 전송 모두 실서버 e2e(연결→구독→CHAT 수신→종료) 통과(2026-07-22). socket.io-client@2는 구버전 의존성이라 배제
   - 세션 등록은 **핸드셰이크 시점**에 발생 (라이브 여부 무관). 미유지 시 ping 타임아웃(~85초)으로 서버가 종료 처리
   - 날짜 형식: 세션 목록의 connectedDate/disconnectedDate는 `"2026-07-22 22:44:39"` (공백 구분, 타임존 없음)
 - 소켓 이벤트 payload는 **JSON 문자열**로 전달됨 (`JSON.parse` 필요) — wizbot 실측과 문서 예제 모두 일치.
