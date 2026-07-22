@@ -15,7 +15,7 @@ export interface VerifyContext {
   tokenManager: TokenManager | undefined;
 }
 
-export type CheckRequirement = 'client' | 'user';
+export type CheckRequirement = 'client' | 'user' | 'both';
 
 export interface VerifyCheck {
   /** docs/api-notes.md와 매칭되는 이름 (예: "GET /open/v1/users/me") */
@@ -86,10 +86,12 @@ export async function runChecks(checks: readonly VerifyCheck[]): Promise<void> {
   console.log('');
 
   for (const check of checks) {
+    const needsClient = check.requires === 'client' || check.requires === 'both';
+    const needsUser = check.requires === 'user' || check.requires === 'both';
     const skipReason =
-      check.requires === 'client' && ctx.clientId === undefined
+      needsClient && ctx.clientId === undefined
         ? 'Client 자격증명 없음'
-        : check.requires === 'user' && ctx.tokenManager === undefined
+        : needsUser && ctx.tokenManager === undefined
           ? '유저 토큰 없음'
           : null;
 

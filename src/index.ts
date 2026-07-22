@@ -57,8 +57,28 @@ export { TokenManager, ChzzkTokenRefreshError, type TokenManagerOptions } from '
 export { ChzzkOpenClient, type ChzzkOpenClientOptions } from './client.js';
 
 export { UserResource } from './resources/user.js';
+export { ChannelResource } from './resources/channel.js';
 export type { ResourceDeps } from './resources/shared.js';
 
 export { userMeSchema, type UserMe } from './types/user.js';
+
+export {
+  channelSchema,
+  streamingRoleMemberSchema,
+  followerSchema,
+  followersPageSchema,
+  subscriberSchema,
+  subscribersPageSchema,
+  knownStreamingRoles,
+  type Channel,
+  type StreamingRoleMember,
+  type StreamingRole,
+  type Follower,
+  type FollowersPage,
+  type Subscriber,
+  type SubscribersPage,
+  type SubscriberSort,
+  type PageParams,
+} from './types/channel.js';
 
 export { parseLenient } from './http/parse.js';
