@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # npm pack output
 *.tgz
+
+# local agent artifacts
+.claude/
