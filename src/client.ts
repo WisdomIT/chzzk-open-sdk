@@ -6,6 +6,7 @@ import type { TokenStore } from './auth/types.js';
 import { HttpClient, type RetryOptions } from './http/client.js';
 import { noopLogger, type ChzzkLogger } from './http/logger.js';
 import { requireParam } from './http/validate.js';
+import { CategoryResource } from './resources/category.js';
 import { ChannelResource } from './resources/channel.js';
 import { UserResource } from './resources/user.js';
 import type { ResourceDeps } from './resources/shared.js';
@@ -41,6 +42,7 @@ export class ChzzkOpenClient {
   readonly auth: TokenManager;
   readonly users: UserResource;
   readonly channels: ChannelResource;
+  readonly categories: CategoryResource;
 
   private readonly clientId: string;
 
@@ -72,6 +74,7 @@ export class ChzzkOpenClient {
 
     this.users = new UserResource(deps);
     this.channels = new ChannelResource(deps);
+    this.categories = new CategoryResource(deps);
   }
 
   /** 인가 코드 요청 URL 생성 — 유저를 이 URL로 리다이렉트한다. */

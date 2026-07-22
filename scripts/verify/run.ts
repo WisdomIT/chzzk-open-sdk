@@ -11,9 +11,9 @@
  * 각 리소스 이슈(#6~#13)에서 이 파일에 검증 항목을 추가한다.
  * 불일치 발견 시 docs/api-notes.md 의 해당 행을 갱신한다.
  */
-import { z } from 'zod';
 import { bearerHeaders, clientHeaders } from '../../src/auth/headers.js';
 import { requireParam } from '../../src/http/validate.js';
+import { categoriesSearchResponseSchema } from '../../src/types/category.js';
 import {
   channelsResponseSchema,
   followersPageSchema,
@@ -76,17 +76,7 @@ const categoriesSearchCheck: VerifyCheck = {
         requireParam(ctx.clientSecret, 'clientSecret'),
       ),
     });
-    const schema = z.looseObject({
-      data: z.array(
-        z.looseObject({
-          categoryType: z.string(),
-          categoryId: z.string(),
-          categoryValue: z.string(),
-          posterImageUrl: z.string().nullable(),
-        }),
-      ),
-    });
-    const { parsed, extraFields } = checkSchema(schema, raw, ['data']);
+    const { parsed, extraFields } = checkSchema(categoriesSearchResponseSchema, raw, ['data']);
     return { extraFields, note: `${parsed.data.length}건 수신` };
   },
 };

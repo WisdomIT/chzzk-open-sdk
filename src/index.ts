@@ -58,9 +58,18 @@ export { ChzzkOpenClient, type ChzzkOpenClientOptions } from './client.js';
 
 export { UserResource } from './resources/user.js';
 export { ChannelResource } from './resources/channel.js';
+export { CategoryResource, type CategorySearchParams } from './resources/category.js';
 export type { ResourceDeps } from './resources/shared.js';
 
 export { userMeSchema, type UserMe } from './types/user.js';
+
+export {
+  categorySchema,
+  categoriesSearchResponseSchema,
+  knownCategoryTypes,
+  type Category,
+  type CategoryType,
+} from './types/category.js';
 
 export {
   channelSchema,
