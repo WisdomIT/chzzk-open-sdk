@@ -28,3 +28,6 @@ pnpm-debug.log*
 
 # local agent artifacts
 .claude/
+
+# local credentials / tokens (never commit)
+.tokens.json
