@@ -9,6 +9,7 @@ import { requireParam } from './http/validate.js';
 import { CategoryResource } from './resources/category.js';
 import { ChannelResource } from './resources/channel.js';
 import { ChatResource } from './resources/chat.js';
+import { DropsResource } from './resources/drops.js';
 import { LiveResource } from './resources/live.js';
 import { UserResource } from './resources/user.js';
 import type { ResourceDeps } from './resources/shared.js';
@@ -47,6 +48,7 @@ export class ChzzkOpenClient {
   readonly categories: CategoryResource;
   readonly lives: LiveResource;
   readonly chats: ChatResource;
+  readonly drops: DropsResource;
 
   private readonly clientId: string;
 
@@ -81,6 +83,7 @@ export class ChzzkOpenClient {
     this.categories = new CategoryResource(deps);
     this.lives = new LiveResource(deps);
     this.chats = new ChatResource(deps);
+    this.drops = new DropsResource(deps);
   }
 
   /** 인가 코드 요청 URL 생성 — 유저를 이 URL로 리다이렉트한다. */
