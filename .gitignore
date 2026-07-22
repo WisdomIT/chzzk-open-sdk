@@ -31,3 +31,8 @@ pnpm-debug.log*
 
 # local credentials / tokens (never commit)
 .tokens.json
+
+# docs site (generated)
+docs/api/
+docs/.vitepress/cache/
+docs/.vitepress/dist/
