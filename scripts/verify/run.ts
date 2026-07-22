@@ -20,7 +20,9 @@ import {
   streamingRolesResponseSchema,
   subscribersPageSchema,
 } from '../../src/types/channel.js';
+import { ChzzkPermissionError } from '../../src/errors.js';
 import { chatSendResultSchema, chatSettingsSchema } from '../../src/types/chat.js';
+import { dropsRewardClaimsPageSchema } from '../../src/types/drops.js';
 import { livesPageSchema, liveSettingSchema, streamKeySchema } from '../../src/types/live.js';
 import { userMeSchema } from '../../src/types/user.js';
 import { checkSchema, runChecks, type VerifyCheck, type VerifyContext } from './runner.js';
@@ -428,6 +430,41 @@ const chatNoticeCheck: VerifyCheck = {
 // chats/blind-message: 세션 CHAT 이벤트의 chatChannelId/messageTime 필요 →
 // 실시간 Transport(#15) 구현 후 실측 예정 (api-notes 검증 보류)
 
+// --- Drops --------------------------------------------------------------
+
+/**
+ * https://chzzk.gitbook.io/chzzk/chzzk-api/drops
+ * 드롭스 스코프는 법인 인증 필요 — 스코프 없으면 403이 정상이며 검증 보류(🟡) 유지.
+ * 스코프 확보 시 이 체크가 자동으로 실스키마 검증으로 전환된다.
+ */
+const dropsRewardClaimsCheck: VerifyCheck = {
+  name: 'GET /open/v1/drops/reward-claims',
+  requires: 'client',
+  async run(ctx) {
+    try {
+      const raw = await ctx.http.request<unknown>({
+        method: 'GET',
+        path: '/open/v1/drops/reward-claims',
+        query: { 'page.size': 5 },
+        headers: clientHeaders(
+          requireParam(ctx.clientId, 'clientId'),
+          requireParam(ctx.clientSecret, 'clientSecret'),
+        ),
+      });
+      const { parsed, extraFields } = checkSchema(dropsRewardClaimsPageSchema, raw, [
+        'data',
+        'page',
+      ]);
+      return { extraFields, note: `${parsed.data.length}건 수신 (스코프 보유)` };
+    } catch (error) {
+      if (error instanceof ChzzkPermissionError) {
+        return { note: `403 "${error.apiMessage ?? ''}" — 드롭스 스코프 없음, 검증 보류 🟡 유지` };
+      }
+      throw error;
+    }
+  },
+};
+
 await runChecks([
   usersMeCheck,
   categoriesSearchCheck,
@@ -443,4 +480,5 @@ await runChecks([
   chatSendCheck,
   chatSettingsPutCheck,
   chatNoticeCheck,
+  dropsRewardClaimsCheck,
 ]);

@@ -61,6 +61,7 @@ export { ChannelResource } from './resources/channel.js';
 export { CategoryResource, type CategorySearchParams } from './resources/category.js';
 export { LiveResource, type LivesParams } from './resources/live.js';
 export { ChatResource, type ChatNoticeParams } from './resources/chat.js';
+export { DropsResource, type DropsRewardClaimsParams } from './resources/drops.js';
 export type { ResourceDeps } from './resources/shared.js';
 
 export { userMeSchema, type UserMe } from './types/user.js';
@@ -98,6 +99,19 @@ export {
   type ChatAvailableGroup,
   type BlindMessageParams,
 } from './types/chat.js';
+
+export {
+  dropsRewardClaimSchema,
+  dropsRewardClaimsPageSchema,
+  dropsUpdateResultSchema,
+  knownFulfillmentStates,
+  knownRewardClaimUpdateStatuses,
+  type DropsRewardClaim,
+  type DropsRewardClaimsPage,
+  type DropsUpdateResult,
+  type FulfillmentState,
+  type RewardClaimUpdateStatus,
+} from './types/drops.js';
 
 export {
   channelSchema,
