@@ -136,6 +136,24 @@ export {
 } from './types/session.js';
 
 export {
+  SessionTransport,
+  type SessionTransportOptions,
+  type SessionTransportReconnectOptions,
+  type RawSessionEvent,
+  type SystemEventData,
+} from './realtime/transport.js';
+
+export {
+  connectEngineSocket,
+  hasWebSocket,
+  type EngineSocket,
+  type EngineSocketOptions,
+  type EngineSocketHandlers,
+} from './realtime/engine.js';
+
+export { TypedEmitter } from './realtime/emitter.js';
+
+export {
   channelSchema,
   streamingRoleMemberSchema,
   followerSchema,
