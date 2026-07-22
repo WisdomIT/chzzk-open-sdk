@@ -59,6 +59,7 @@ export { ChzzkOpenClient, type ChzzkOpenClientOptions } from './client.js';
 export { UserResource } from './resources/user.js';
 export { ChannelResource } from './resources/channel.js';
 export { CategoryResource, type CategorySearchParams } from './resources/category.js';
+export { LiveResource, type LivesParams } from './resources/live.js';
 export type { ResourceDeps } from './resources/shared.js';
 
 export { userMeSchema, type UserMe } from './types/user.js';
@@ -70,6 +71,17 @@ export {
   type Category,
   type CategoryType,
 } from './types/category.js';
+
+export {
+  liveSchema,
+  livesPageSchema,
+  liveSettingSchema,
+  streamKeySchema,
+  type Live,
+  type LivesPage,
+  type LiveSetting,
+  type LiveSettingPatch,
+} from './types/live.js';
 
 export {
   channelSchema,

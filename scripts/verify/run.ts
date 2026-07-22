@@ -20,6 +20,7 @@ import {
   streamingRolesResponseSchema,
   subscribersPageSchema,
 } from '../../src/types/channel.js';
+import { livesPageSchema, liveSettingSchema, streamKeySchema } from '../../src/types/live.js';
 import { userMeSchema } from '../../src/types/user.js';
 import { checkSchema, runChecks, type VerifyCheck, type VerifyContext } from './runner.js';
 
@@ -192,6 +193,123 @@ const subscribersCheck: VerifyCheck = {
   },
 };
 
+// --- Live ---------------------------------------------------------------
+
+/** https://chzzk.gitbook.io/chzzk/chzzk-api/live */
+const LIVE_ITEM_KEYS = [
+  'liveId',
+  'liveTitle',
+  'liveThumbnailImageUrl',
+  'concurrentUserCount',
+  'openDate',
+  'adult',
+  'tags',
+  'categoryType',
+  'liveCategory',
+  'liveCategoryValue',
+  'channelId',
+  'channelName',
+  'channelImageUrl',
+];
+
+const livesCheck: VerifyCheck = {
+  name: 'GET /open/v1/lives',
+  requires: 'client',
+  async run(ctx) {
+    const raw = await ctx.http.request<unknown>({
+      method: 'GET',
+      path: '/open/v1/lives',
+      query: { size: 3 },
+      headers: clientHeaders(
+        requireParam(ctx.clientId, 'clientId'),
+        requireParam(ctx.clientSecret, 'clientSecret'),
+      ),
+    });
+    const { parsed, extraFields } = checkSchema(livesPageSchema, raw, ['data', 'page']);
+    const first = parsed.data[0];
+    const itemExtras =
+      first !== undefined
+        ? Object.keys(first)
+            .filter((key) => !LIVE_ITEM_KEYS.includes(key))
+            .map((key) => `data[].${key}`)
+        : [];
+    return {
+      extraFields: [...extraFields, ...itemExtras],
+      note: `${parsed.data.length}건 / page.next=${parsed.page?.next !== undefined ? '있음' : '없음'}`,
+    };
+  },
+};
+
+const streamKeyCheck: VerifyCheck = {
+  name: 'GET /open/v1/streams/key',
+  requires: 'user',
+  async run(ctx) {
+    const manager = requireParam(ctx.tokenManager, 'tokenManager');
+    const raw = await manager.withAccessToken((token) =>
+      ctx.http.request<unknown>({
+        method: 'GET',
+        path: '/open/v1/streams/key',
+        headers: bearerHeaders(token),
+      }),
+    );
+    // ⚠️ streamKey 값은 절대 출력하지 않는다 (송출 권한 그 자체)
+    const { parsed, extraFields } = checkSchema(streamKeySchema, raw, ['streamKey']);
+    return { extraFields, note: `streamKey 수신 (${parsed.streamKey.length}자, 값 미출력)` };
+  },
+};
+
+const liveSettingCheck: VerifyCheck = {
+  name: 'GET /open/v1/lives/setting',
+  requires: 'user',
+  async run(ctx) {
+    const manager = requireParam(ctx.tokenManager, 'tokenManager');
+    const raw = await manager.withAccessToken((token) =>
+      ctx.http.request<unknown>({
+        method: 'GET',
+        path: '/open/v1/lives/setting',
+        headers: bearerHeaders(token),
+      }),
+    );
+    const { parsed, extraFields } = checkSchema(liveSettingSchema, raw, [
+      'defaultLiveTitle',
+      'category',
+      'tags',
+    ]);
+    return {
+      extraFields,
+      note: `title="${parsed.defaultLiveTitle}" / category=${parsed.category?.categoryValue ?? 'null'}`,
+    };
+  },
+};
+
+/** 동일 값 라운드트립 — 현재 제목을 그대로 PATCH해 쓰기 경로만 검증 (설정 실변경 없음) */
+const liveSettingPatchCheck: VerifyCheck = {
+  name: 'PATCH /open/v1/lives/setting (동일값 라운드트립)',
+  requires: 'user',
+  async run(ctx) {
+    const manager = requireParam(ctx.tokenManager, 'tokenManager');
+    const current = await manager.withAccessToken((token) =>
+      ctx.http.request<{ defaultLiveTitle: string }>({
+        method: 'GET',
+        path: '/open/v1/lives/setting',
+        headers: bearerHeaders(token),
+      }),
+    );
+    if (current.defaultLiveTitle === '') {
+      return { note: '제목 미설정 채널 — 변경 없이 통과 처리' };
+    }
+    await manager.withAccessToken((token) =>
+      ctx.http.request<unknown>({
+        method: 'PATCH',
+        path: '/open/v1/lives/setting',
+        headers: bearerHeaders(token),
+        body: { defaultLiveTitle: current.defaultLiveTitle },
+      }),
+    );
+    return { note: '동일 제목 PATCH 200 확인' };
+  },
+};
+
 await runChecks([
   usersMeCheck,
   categoriesSearchCheck,
@@ -199,4 +317,8 @@ await runChecks([
   streamingRolesCheck,
   followersCheck,
   subscribersCheck,
+  livesCheck,
+  streamKeyCheck,
+  liveSettingCheck,
+  liveSettingPatchCheck,
 ]);
