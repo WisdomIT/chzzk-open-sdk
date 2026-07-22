@@ -63,6 +63,7 @@ export { LiveResource, type LivesParams } from './resources/live.js';
 export { ChatResource, type ChatNoticeParams } from './resources/chat.js';
 export { DropsResource, type DropsRewardClaimsParams } from './resources/drops.js';
 export { RestrictionResource, type RestrictionListParams } from './resources/restriction.js';
+export { SessionResource, type SessionListParams } from './resources/session.js';
 export type { ResourceDeps } from './resources/shared.js';
 
 export { userMeSchema, type UserMe } from './types/user.js';
@@ -121,6 +122,18 @@ export {
   type RestrictedChannelsPage,
   type TemporaryRestrictionParams,
 } from './types/restriction.js';
+
+export {
+  sessionAuthSchema,
+  sessionInfoSchema,
+  sessionsPageSchema,
+  sessionEventTypes,
+  knownSubscribedEventTypes,
+  type SessionEventType,
+  type SubscribedEventType,
+  type SessionInfo,
+  type SessionsPage,
+} from './types/session.js';
 
 export {
   channelSchema,
