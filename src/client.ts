@@ -6,6 +6,9 @@ import type { TokenStore } from './auth/types.js';
 import { HttpClient, type RetryOptions } from './http/client.js';
 import { noopLogger, type ChzzkLogger } from './http/logger.js';
 import { requireParam } from './http/validate.js';
+import { ChzzkRealtime } from './realtime/stream.js';
+import { SessionTransport, type SessionTransportReconnectOptions } from './realtime/transport.js';
+import type { SessionEventType } from './types/session.js';
 import { CategoryResource } from './resources/category.js';
 import { ChannelResource } from './resources/channel.js';
 import { ChatResource } from './resources/chat.js';
@@ -55,11 +58,15 @@ export class ChzzkOpenClient {
   readonly sessions: SessionResource;
 
   private readonly clientId: string;
+  private readonly logger: ChzzkLogger;
+  private readonly fetchFn: typeof globalThis.fetch | undefined;
 
   constructor(options: ChzzkOpenClientOptions) {
     this.clientId = requireParam(options.clientId, 'clientId');
     const clientSecret = requireParam(options.clientSecret, 'clientSecret');
     const logger = options.logger ?? noopLogger;
+    this.logger = logger;
+    this.fetchFn = options.fetch;
 
     const httpOptions: ConstructorParameters<typeof HttpClient>[0] = { logger };
     if (options.baseUrl !== undefined) httpOptions.baseUrl = options.baseUrl;
@@ -95,5 +102,47 @@ export class ChzzkOpenClient {
   /** 인가 코드 요청 URL 생성 — 유저를 이 URL로 리다이렉트한다. */
   getAuthorizationUrl(params: { redirectUri: string; state: string }): string {
     return buildAuthorizationUrl({ clientId: this.clientId, ...params });
+  }
+
+  /**
+   * 실시간 정규화 이벤트 스트림 생성.
+   *
+   * 단일 업스트림 연결 위에 여러 소비자(에미터/AsyncIterable)가 붙는다.
+   * `start()`로 연결하고 `close()`로 종료한다. 자세한 사용 패턴은 examples/ 참고.
+   *
+   * ```ts
+   * const realtime = client.createRealtime({ auth: 'client', subscriptions: ['chat'] });
+   * realtime.on('chat', (chat) => console.log(chat.nickname, chat.content));
+   * await realtime.start();
+   * ```
+   */
+  createRealtime(options: {
+    auth: 'client' | 'user';
+    subscriptions?: readonly SessionEventType[];
+    reconnect?: SessionTransportReconnectOptions;
+    preferWebSocket?: boolean;
+    connectedTimeoutMs?: number;
+  }): ChzzkRealtime {
+    const transportOptions: ConstructorParameters<typeof SessionTransport>[0] = {
+      sessions: this.sessions,
+      auth: options.auth,
+      logger: this.logger,
+    };
+    if (options.subscriptions !== undefined) {
+      transportOptions.subscriptions = options.subscriptions;
+    }
+    if (options.reconnect !== undefined) transportOptions.reconnect = options.reconnect;
+    if (options.preferWebSocket !== undefined) {
+      transportOptions.preferWebSocket = options.preferWebSocket;
+    }
+    if (options.connectedTimeoutMs !== undefined) {
+      transportOptions.connectedTimeoutMs = options.connectedTimeoutMs;
+    }
+    if (this.fetchFn !== undefined) transportOptions.fetchFn = this.fetchFn;
+
+    return new ChzzkRealtime({
+      transport: new SessionTransport(transportOptions),
+      logger: this.logger,
+    });
   }
 }

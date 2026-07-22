@@ -155,6 +155,8 @@ export { TypedEmitter } from './realtime/emitter.js';
 
 export { normalizeSessionEvent, getChatRole } from './realtime/normalize.js';
 
+export { ChzzkRealtime, type RealtimeIteratorOptions } from './realtime/stream.js';
+
 export {
   rawChatEventSchema,
   rawDonationEventSchema,
