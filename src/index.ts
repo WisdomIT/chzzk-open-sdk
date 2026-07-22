@@ -60,6 +60,7 @@ export { UserResource } from './resources/user.js';
 export { ChannelResource } from './resources/channel.js';
 export { CategoryResource, type CategorySearchParams } from './resources/category.js';
 export { LiveResource, type LivesParams } from './resources/live.js';
+export { ChatResource, type ChatNoticeParams } from './resources/chat.js';
 export type { ResourceDeps } from './resources/shared.js';
 
 export { userMeSchema, type UserMe } from './types/user.js';
@@ -82,6 +83,21 @@ export {
   type LiveSetting,
   type LiveSettingPatch,
 } from './types/live.js';
+
+export {
+  chatSendResultSchema,
+  chatSettingsSchema,
+  allowedMinFollowerMinutes,
+  allowedChatSlowModeSecs,
+  knownChatAvailableConditions,
+  knownChatAvailableGroups,
+  type ChatSendResult,
+  type ChatSettings,
+  type ChatSettingsUpdate,
+  type ChatAvailableCondition,
+  type ChatAvailableGroup,
+  type BlindMessageParams,
+} from './types/chat.js';
 
 export {
   channelSchema,

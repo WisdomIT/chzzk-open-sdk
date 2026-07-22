@@ -20,6 +20,7 @@ import {
   streamingRolesResponseSchema,
   subscribersPageSchema,
 } from '../../src/types/channel.js';
+import { chatSendResultSchema, chatSettingsSchema } from '../../src/types/chat.js';
 import { livesPageSchema, liveSettingSchema, streamKeySchema } from '../../src/types/live.js';
 import { userMeSchema } from '../../src/types/user.js';
 import { checkSchema, runChecks, type VerifyCheck, type VerifyContext } from './runner.js';
@@ -310,6 +311,123 @@ const liveSettingPatchCheck: VerifyCheck = {
   },
 };
 
+// --- Chat ---------------------------------------------------------------
+
+/** https://chzzk.gitbook.io/chzzk/chzzk-api/chat */
+const chatSettingsCheck: VerifyCheck = {
+  name: 'GET /open/v1/chats/settings',
+  requires: 'user',
+  async run(ctx) {
+    const manager = requireParam(ctx.tokenManager, 'tokenManager');
+    const raw = await manager.withAccessToken((token) =>
+      ctx.http.request<unknown>({
+        method: 'GET',
+        path: '/open/v1/chats/settings',
+        headers: bearerHeaders(token),
+      }),
+    );
+    const { parsed, extraFields } = checkSchema(chatSettingsSchema, raw, [
+      'chatAvailableCondition',
+      'chatAvailableGroup',
+      'minFollowerMinute',
+      'allowSubscriberInFollowerMode',
+      'chatSlowModeSec',
+      'chatEmojiMode',
+    ]);
+    return {
+      extraFields,
+      note: `group=${parsed.chatAvailableGroup}, slowMode=${parsed.chatSlowModeSec}s`,
+    };
+  },
+};
+
+/** ⚠️ 실제 채팅이 전송된다 — CHZZK_VERIFY_WRITE=1 설정 시에만 실행 */
+const chatSendCheck: VerifyCheck = {
+  name: 'POST /open/v1/chats/send',
+  requires: 'user',
+  skipUnlessEnv: 'CHZZK_VERIFY_WRITE',
+  async run(ctx) {
+    const manager = requireParam(ctx.tokenManager, 'tokenManager');
+    const raw = await manager.withAccessToken((token) =>
+      ctx.http.request<unknown>({
+        method: 'POST',
+        path: '/open/v1/chats/send',
+        headers: bearerHeaders(token),
+        body: { message: 'chzzk-open-sdk 검증 (verify)' },
+      }),
+    );
+    const { extraFields } = checkSchema(chatSendResultSchema, raw, ['messageId']);
+    return { extraFields, note: 'messageId 수신 (실제 채팅 1건 전송됨)' };
+  },
+};
+
+/** 동일 값 라운드트립 — 현재 설정을 그대로 PUT (실변경 없음) */
+const chatSettingsPutCheck: VerifyCheck = {
+  name: 'PUT /open/v1/chats/settings (동일값 라운드트립)',
+  requires: 'user',
+  skipUnlessEnv: 'CHZZK_VERIFY_WRITE',
+  async run(ctx) {
+    const manager = requireParam(ctx.tokenManager, 'tokenManager');
+    const current = await manager.withAccessToken((token) =>
+      ctx.http.request<Record<string, unknown>>({
+        method: 'GET',
+        path: '/open/v1/chats/settings',
+        headers: bearerHeaders(token),
+      }),
+    );
+    const body = {
+      chatAvailableCondition: current.chatAvailableCondition,
+      chatAvailableGroup: current.chatAvailableGroup,
+      minFollowerMinute: current.minFollowerMinute,
+      allowSubscriberInFollowerMode: current.allowSubscriberInFollowerMode,
+      chatSlowModeSec: current.chatSlowModeSec,
+      chatEmojiMode: current.chatEmojiMode,
+    };
+    await manager.withAccessToken((token) =>
+      ctx.http.request<unknown>({
+        method: 'PUT',
+        path: '/open/v1/chats/settings',
+        headers: bearerHeaders(token),
+        body,
+      }),
+    );
+    const after = await manager.withAccessToken((token) =>
+      ctx.http.request<Record<string, unknown>>({
+        method: 'GET',
+        path: '/open/v1/chats/settings',
+        headers: bearerHeaders(token),
+      }),
+    );
+    const unchanged = JSON.stringify(body) === JSON.stringify({ ...body, ...after });
+    if (!unchanged) {
+      throw new Error('라운드트립 후 설정 값이 달라짐 — 확인 필요');
+    }
+    return { note: '동일값 PUT 200 + 재조회 일치' };
+  },
+};
+
+// chats/notice: 채널 공지를 실제로 덮어쓰므로 별도 플래그 (CHZZK_VERIFY_NOTICE=1)
+const chatNoticeCheck: VerifyCheck = {
+  name: 'POST /open/v1/chats/notice',
+  requires: 'user',
+  skipUnlessEnv: 'CHZZK_VERIFY_NOTICE',
+  async run(ctx) {
+    const manager = requireParam(ctx.tokenManager, 'tokenManager');
+    await manager.withAccessToken((token) =>
+      ctx.http.request<unknown>({
+        method: 'POST',
+        path: '/open/v1/chats/notice',
+        headers: bearerHeaders(token),
+        body: { message: 'chzzk-open-sdk 공지 검증' },
+      }),
+    );
+    return { note: '공지 등록 200 (⚠️ 채널 공지가 이 메시지로 변경됨)' };
+  },
+};
+
+// chats/blind-message: 세션 CHAT 이벤트의 chatChannelId/messageTime 필요 →
+// 실시간 Transport(#15) 구현 후 실측 예정 (api-notes 검증 보류)
+
 await runChecks([
   usersMeCheck,
   categoriesSearchCheck,
@@ -321,4 +439,8 @@ await runChecks([
   streamKeyCheck,
   liveSettingCheck,
   liveSettingPatchCheck,
+  chatSettingsCheck,
+  chatSendCheck,
+  chatSettingsPutCheck,
+  chatNoticeCheck,
 ]);
