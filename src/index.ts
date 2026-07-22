@@ -62,6 +62,7 @@ export { CategoryResource, type CategorySearchParams } from './resources/categor
 export { LiveResource, type LivesParams } from './resources/live.js';
 export { ChatResource, type ChatNoticeParams } from './resources/chat.js';
 export { DropsResource, type DropsRewardClaimsParams } from './resources/drops.js';
+export { RestrictionResource, type RestrictionListParams } from './resources/restriction.js';
 export type { ResourceDeps } from './resources/shared.js';
 
 export { userMeSchema, type UserMe } from './types/user.js';
@@ -112,6 +113,14 @@ export {
   type FulfillmentState,
   type RewardClaimUpdateStatus,
 } from './types/drops.js';
+
+export {
+  restrictedChannelSchema,
+  restrictedChannelsPageSchema,
+  type RestrictedChannel,
+  type RestrictedChannelsPage,
+  type TemporaryRestrictionParams,
+} from './types/restriction.js';
 
 export {
   channelSchema,
