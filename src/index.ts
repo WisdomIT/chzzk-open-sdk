@@ -153,6 +153,28 @@ export {
 
 export { TypedEmitter } from './realtime/emitter.js';
 
+export { normalizeSessionEvent, getChatRole } from './realtime/normalize.js';
+
+export {
+  rawChatEventSchema,
+  rawDonationEventSchema,
+  rawSubscriptionEventSchema,
+  rawSystemMessageSchema,
+  knownChatUserRoles,
+  knownDonationTypes,
+  type ChatMessage,
+  type ChatUserRole,
+  type ChatRole,
+  type Donation,
+  type DonationType,
+  type SubscriptionEvent,
+  type SystemEvent,
+  type NormalizedEvent,
+  type RawChatEvent,
+  type RawDonationEvent,
+  type RawSubscriptionEvent,
+} from './types/events.js';
+
 export {
   channelSchema,
   streamingRoleMemberSchema,
