@@ -23,7 +23,7 @@ export interface SessionListParams {
  * 실측(2026-07-22) 참고:
  * - 세션은 소켓 핸드셰이크 시점에 등록되며 라이브 상태와 무관
  * - 클라이언트 인증 세션에 유저 토큰으로 이벤트를 구독하는 조합이 동작
- *   (봇 아키텍처의 표준 패턴 — wizbot 방식)
+ *   (다중 채널 봇 아키텍처의 표준 패턴)
  * - 구독/해지 완료는 HTTP 응답이 아니라 세션의 SYSTEM(subscribed/
  *   unsubscribed) 메시지로 통지된다
  */

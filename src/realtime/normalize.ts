@@ -149,7 +149,7 @@ function toSystemEvent(rawSystem: RawSystem): SystemEvent {
  * 뱃지·권한 파생: 채팅 작성자의 역할을 3단계로 요약한다.
  *
  * 실측 확정된 `userRole`(profile.userRoleCode)을 1차 기준으로 쓰고,
- * 없을 때만 구 wizbot 방식(뱃지 이미지 URL)으로 폴백한다.
+ * 없을 때만 레거시 방식(뱃지 이미지 URL 추론)으로 폴백한다.
  */
 export function getChatRole(message: Pick<ChatMessage, 'userRole' | 'badges'>): ChatRole {
   switch (message.userRole) {
@@ -163,7 +163,7 @@ export function getChatRole(message: Pick<ChatMessage, 'userRole' | 'badges'>): 
     default:
       break;
   }
-  // 폴백: 뱃지 추론 (구 wizbot getChatRole)
+  // 폴백: 레거시 뱃지 URL 추론
   if (message.badges.some((badge) => badge.imageUrl.endsWith('streamer.png'))) {
     return 'STREAMER';
   }

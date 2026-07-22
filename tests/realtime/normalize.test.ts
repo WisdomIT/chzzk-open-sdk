@@ -217,7 +217,7 @@ describe('getChatRole', () => {
     expect(getChatRole({ userRole: 'common_user', badges: [] })).toBe('VIEWER');
   });
 
-  it('falls back to badge inference when userRole is missing (legacy wizbot logic)', () => {
+  it('falls back to badge inference when userRole is missing (legacy badge inference)', () => {
     expect(getChatRole({ userRole: null, badges: [{ imageUrl: 'https://x/streamer.png' }] })).toBe(
       'STREAMER',
     );
