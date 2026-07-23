@@ -1,7 +1,10 @@
 name: Release
 
 # vX.Y.Z 태그 push에서만 발동 — 태그 없이 자동 배포되지 않는다.
-# 사전 준비: 저장소 시크릿에 NPM_TOKEN(npm automation token) 등록.
+#
+# 인증: npm Trusted Publishing (GitHub Actions OIDC) — 토큰/시크릿 불필요.
+# 사전 준비(1회): npmjs.com > chzzk-open-sdk > Settings > Trusted Publisher에
+# GitHub Actions(WisdomIT/chzzk-open-sdk, release.yml) 등록.
 # 절차는 docs/release.md 참조.
 on:
   push:
@@ -9,7 +12,7 @@ on:
 
 permissions:
   contents: read
-  id-token: write # npm provenance 서명용
+  id-token: write # OIDC 신원 증명 + provenance 서명
 
 jobs:
   publish:
@@ -24,6 +27,10 @@ jobs:
           node-version: 22
           cache: pnpm
           registry-url: https://registry.npmjs.org
+
+      # Trusted Publishing은 npm 11.5.1+ 필요 (Node 22 기본 npm은 10.x)
+      - name: Update npm for trusted publishing
+        run: npm install -g npm@latest && npm --version
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -47,7 +54,6 @@ jobs:
       - name: Inspect publish contents (log)
         run: npm publish --dry-run
 
-      - name: Publish to npm
-        run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # OIDC 기반 무토큰 배포 — provenance는 trusted publishing에서 자동 생성
+      - name: Publish to npm (trusted publishing)
+        run: npm publish --access public
