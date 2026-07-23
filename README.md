@@ -4,6 +4,8 @@
 
 > **이 SDK는 [공식 OPEN API](https://chzzk.gitbook.io/chzzk)(`openapi.chzzk.naver.com`)만 지원하며, 문서에 없는 비공식·내부 엔드포인트는 포함하지 않습니다.**
 
+**📚 문서: <https://wisdomit.github.io/chzzk-open-sdk/>** — 가이드 · API 레퍼런스 · 문서-실제 검증 기록
+
 ## 왜 이 SDK인가
 
 - ✅ **공식 스펙만, 전부** — 공식 문서의 REST 엔드포인트 31개 100% 커버, 비공식 엔드포인트 0건
@@ -130,6 +132,7 @@ Client Secret·액세스 토큰·스트림키는 브라우저에 노출하면 �
 
 ## 문서
 
+- **[문서 사이트](https://wisdomit.github.io/chzzk-open-sdk/)** — 가이드(시작하기/OAuth/리소스/실시간) + API 레퍼런스(자동 생성)
 - [examples/](examples/) — 실행 가능한 예제 (OAuth, 라이브 목록, 채팅, 실시간, SSE 릴레이, 명령어 봇)
 - [docs/endpoints.md](docs/endpoints.md) — 전체 엔드포인트 정리표 (스코프/파라미터/응답)
 - [docs/api-notes.md](docs/api-notes.md) — **문서 vs 실제 검증 기록** (이 SDK의 신뢰성 근거)
