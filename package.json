@@ -1,6 +1,6 @@
 {
   "name": "chzzk-open-sdk",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "TypeScript SDK for the official CHZZK Open API (openapi.chzzk.naver.com). Official endpoints only — no unofficial/internal APIs.",
   "keywords": [
     "chzzk",
@@ -13,7 +13,7 @@
     "chat",
     "typescript"
   ],
-  "homepage": "https://github.com/WisdomIT/chzzk-open-sdk#readme",
+  "homepage": "https://wisdomit.github.io/chzzk-open-sdk/",
   "bugs": {
     "url": "https://github.com/WisdomIT/chzzk-open-sdk/issues"
   },
@@ -50,7 +50,14 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prepublishOnly": "pnpm run build"
+    "login": "tsx scripts/auth/login-server.ts",
+    "verify": "tsx scripts/verify/run.ts",
+    "verify:token": "tsx scripts/verify/token-raw.ts",
+    "prepublishOnly": "pnpm run build",
+    "docs:api": "typedoc",
+    "docs:dev": "pnpm docs:api && vitepress dev docs",
+    "docs:build": "pnpm docs:api && vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "devDependencies": {
     "@eslint/js": "^9.31.0",
@@ -59,8 +66,13 @@
     "eslint-config-prettier": "^10.1.0",
     "prettier": "^3.6.0",
     "tsup": "^8.5.0",
+    "tsx": "^4.23.1",
+    "typedoc": "^0.28.20",
+    "typedoc-plugin-markdown": "^4.12.0",
+    "typedoc-vitepress-theme": "^1.1.3",
     "typescript": "^5.8.0",
     "typescript-eslint": "^8.36.0",
+    "vitepress": "^1.6.4",
     "vitest": "^3.2.0"
   },
   "packageManager": "pnpm@10.13.1",
@@ -69,5 +81,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "zod": "^4.4.3"
   }
 }

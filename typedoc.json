@@ -1,0 +1,16 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/index.ts"],
+  "plugin": ["typedoc-plugin-markdown", "typedoc-vitepress-theme"],
+  "out": "docs/api",
+  "docsRoot": "docs",
+  "cleanOutputDir": true,
+  "readme": "none",
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeInternal": true,
+  "hideBreadcrumbs": true,
+  "useCodeBlocks": true,
+  "githubPages": false,
+  "sourceLinkTemplate": "https://github.com/WisdomIT/chzzk-open-sdk/blob/dev/{path}#L{line}"
+}
