@@ -29,5 +29,12 @@ export default tseslint.config(
     files: ['**/*.mjs', '**/*.js'],
     ...tseslint.configs.disableTypeChecked,
   },
+  {
+    // .mjs/.js 스크립트는 Node 런타임 전역 사용 (flat config는 globals를 병합)
+    files: ['**/*.mjs', '**/*.js'],
+    languageOptions: {
+      globals: { console: 'readonly', process: 'readonly' },
+    },
+  },
   prettier,
 );
