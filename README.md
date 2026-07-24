@@ -133,6 +133,10 @@ Client Secret·액세스 토큰·스트림키는 브라우저에 노출하면 �
 ## 문서
 
 - **[문서 사이트](https://wisdomit.github.io/chzzk-open-sdk/)** — 가이드(시작하기/OAuth/리소스/실시간) + API 레퍼런스(자동 생성)
+- **AI/LLM용 문서** — [llms.txt 표준](https://llmstxt.org) 지원:
+  - [`/llms.txt`](https://wisdomit.github.io/chzzk-open-sdk/llms.txt) — 전체 문서 인덱스 (AI가 필요한 페이지만 골라 읽는 목차)
+  - [`/llms-full.txt`](https://wisdomit.github.io/chzzk-open-sdk/llms-full.txt) — 가이드·API 레퍼런스·실측 검증 기록을 합친 전문 (컨텍스트 주입용)
+  - 각 문서 페이지는 URL 끝에 `.md`를 붙이면 마크다운 원본으로 열립니다 (예: [`/guide/getting-started.md`](https://wisdomit.github.io/chzzk-open-sdk/guide/getting-started.md))
 - [examples/](examples/) — 실행 가능한 예제 (OAuth, 라이브 목록, 채팅, 실시간, SSE 릴레이, 명령어 봇)
 - [docs/endpoints.md](docs/endpoints.md) — 전체 엔드포인트 정리표 (스코프/파라미터/응답)
 - [docs/api-notes.md](docs/api-notes.md) — **문서 vs 실제 검증 기록** (이 SDK의 신뢰성 근거)
