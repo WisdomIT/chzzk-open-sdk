@@ -56,7 +56,7 @@
     "prepublishOnly": "pnpm run build",
     "docs:api": "typedoc",
     "docs:dev": "pnpm docs:api && vitepress dev docs",
-    "docs:build": "pnpm docs:api && vitepress build docs",
+    "docs:build": "pnpm docs:api && vitepress build docs && node scripts/fix-llms-links.mjs",
     "docs:preview": "vitepress preview docs"
   },
   "devDependencies": {
@@ -73,6 +73,7 @@
     "typescript": "^5.8.0",
     "typescript-eslint": "^8.36.0",
     "vitepress": "^1.6.4",
+    "vitepress-plugin-llms": "^1.13.3",
     "vitest": "^3.2.0"
   },
   "packageManager": "pnpm@10.13.1",

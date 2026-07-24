@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { defineConfig, type DefaultTheme } from 'vitepress';
+import llmstxt from 'vitepress-plugin-llms';
 
 // TypeDoc(typedoc-vitepress-theme)이 생성하는 API 사이드바 (pnpm docs:api 후 존재)
 function loadApiSidebar(): DefaultTheme.SidebarItem[] {
@@ -42,6 +43,18 @@ export default defineConfig({
   description: '네이버 치지직 공식 OPEN API 전용 TypeScript SDK — 공식 스펙만, 전부, 타입 안전하게',
   base: '/chzzk-open-sdk/',
   ignoreDeadLinks: true,
+
+  // AI 활용용 llms.txt 표준 산출물 생성 (https://llmstxt.org)
+  // /llms.txt (인덱스) · /llms-full.txt (전문) · 각 페이지 .md 원본
+  vite: {
+    plugins: [
+      llmstxt({
+        domain: 'https://wisdomit.github.io',
+        description:
+          '네이버 치지직 공식 OPEN API 전용 TypeScript SDK. 공식 문서와 실제 응답의 불일치를 실측으로 검증한 기록(api-notes)을 포함한다.',
+      }),
+    ],
+  },
 
   themeConfig: {
     nav: [
